@@ -257,6 +257,8 @@ BOOST_BITMASK(BOOST_SCOPED_ENUM_NATIVE(directory_options))
 
 class directory_iterator;
 
+#undef new
+
 namespace detail {
 
 struct dir_itr_imp :

@@ -228,8 +228,6 @@ private:
     };
 
     //! Path comparison operation
-    class compare_op;
-    friend class compare_op;
     class compare_op
     {
     private:
@@ -240,21 +238,11 @@ private:
 
         explicit compare_op(path const& self) BOOST_NOEXCEPT : m_self(self) {}
 
-        BOOST_FORCEINLINE result_type operator() (const value_type* source, const value_type* source_end, const codecvt_type* = NULL) const
-        {
-            return m_self.compare(path(source, source_end));
-        }
+        result_type operator() (const value_type* source, const value_type* source_end, const codecvt_type* = NULL) const;
 
         template< typename OtherChar >
-        BOOST_FORCEINLINE result_type operator() (const OtherChar* source, const OtherChar* source_end, const codecvt_type* cvt = NULL) const
-        {
-            path src;
-            detail::path_traits::convert(source, source_end, src.m_pathname, cvt);
-            return m_self.compare(src);
-        }
+        result_type operator() (const OtherChar* source, const OtherChar* source_end, const codecvt_type* cvt = NULL) const;
     };
-
-    struct sfinae_helper;
 
 public:
     class iterator;
@@ -446,6 +434,12 @@ public:
         }
     }
 
+#if !defined(BOOST_NO_CXX11_NULLPTR)
+    BOOST_DELETED_FUNCTION(path(std::nullptr_t))
+    BOOST_DELETED_FUNCTION(path& operator= (std::nullptr_t))
+#endif
+
+public:
     //  -----  assignments  -----
 
     // We need to explicitly define copy assignment as otherwise it will be implicitly defined as deleted because there is move assignment
@@ -841,8 +835,14 @@ public:
 #else // BOOST_WINDOWS_API
     BOOST_FILESYSTEM_DECL path& make_preferred(); // change slashes to backslashes
 #endif
-    BOOST_FILESYSTEM_DECL path& remove_filename();
+    BOOST_FORCEINLINE path& remove_filename()
+    {
+        BOOST_FILESYSTEM_VERSIONED_SYM(remove_filename)();
+        return *this;
+    }
+    BOOST_FILESYSTEM_DECL path& remove_filename_and_trailing_separators();
     BOOST_FILESYSTEM_DECL path& remove_trailing_separator();
+    BOOST_FILESYSTEM_DECL path& replace_filename(path const& replacement);
     BOOST_FORCEINLINE path& replace_extension(path const& new_extension = path())
     {
         BOOST_FILESYSTEM_VERSIONED_SYM(replace_extension)(new_extension);
@@ -1132,6 +1132,9 @@ private:
         return path(p, p + extension_size);
     }
 
+    BOOST_FILESYSTEM_DECL void remove_filename_v3();
+    BOOST_FILESYSTEM_DECL void remove_filename_v4();
+
     BOOST_FILESYSTEM_DECL void replace_extension_v3(path const& new_extension);
     BOOST_FILESYSTEM_DECL void replace_extension_v4(path const& new_extension);
 
@@ -1285,6 +1288,21 @@ private:
 BOOST_FORCEINLINE bool lexicographical_compare(path::iterator first1, path::iterator last1, path::iterator first2, path::iterator last2)
 {
     return BOOST_FILESYSTEM_VERSIONED_SYM(detail::lex_compare)(first1, last1, first2, last2) < 0;
+}
+
+BOOST_FORCEINLINE path::compare_op::result_type path::compare_op::operator() (const value_type* source, const value_type* source_end, const codecvt_type*) const
+{
+    path src;
+    src.m_pathname.assign(source, source_end);
+    return m_self.compare(src);
+}
+
+template< typename OtherChar >
+BOOST_FORCEINLINE path::compare_op::result_type path::compare_op::operator() (const OtherChar* source, const OtherChar* source_end, const codecvt_type* cvt) const
+{
+    path src;
+    detail::path_traits::convert(source, source_end, src.m_pathname, cvt);
+    return m_self.compare(src);
 }
 
 BOOST_FORCEINLINE bool operator==(path const& lhs, path const& rhs)

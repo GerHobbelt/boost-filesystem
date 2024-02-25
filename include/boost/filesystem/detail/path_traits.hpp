@@ -32,7 +32,7 @@
 #include <boost/type_traits/disjunction.hpp>
 #include <boost/core/enable_if.hpp>
 #endif
-#if !defined(BOOST_FILESYSTEM_NO_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
+#if defined(BOOST_FILESYSTEM_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
 #include <vector>
 #include <list>
 #endif
@@ -49,7 +49,7 @@ template< typename, typename, typename > class basic_string;
 
 namespace filesystem {
 
-BOOST_FILESYSTEM_DECL system::error_category const& codecvt_error_category() BOOST_NOEXCEPT;
+BOOST_FILESYSTEM_DECL system::error_category const& codecvt_error_category() noexcept;
 
 class directory_entry;
 
@@ -256,7 +256,7 @@ struct path_source_traits< boost::basic_string_view< wchar_t, std::char_traits< 
     static BOOST_CONSTEXPR_OR_CONST bool is_native = false;
 };
 
-#if !defined(BOOST_FILESYSTEM_NO_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
+#if defined(BOOST_FILESYSTEM_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
 template< >
 struct
 BOOST_FILESYSTEM_DETAIL_DEPRECATED("Boost.Filesystem path construction/assignment/appending from containers is deprecated, use strings or iterators instead.")
@@ -298,7 +298,7 @@ path_source_traits< std::list< wchar_t > >
     typedef wchar_t char_type;
     static BOOST_CONSTEXPR_OR_CONST bool is_native = false;
 };
-#endif // !defined(BOOST_FILESYSTEM_NO_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
+#endif // defined(BOOST_FILESYSTEM_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
 
 template< >
 struct path_source_traits< directory_entry >
@@ -398,19 +398,19 @@ struct is_native_char_ptr< const path_native_char_type* > :
 };
 
 
-//! Converts character encoding using the supplied codecvt facet. If \a cvt is \c NULL then \c path::codecvt() will be used.
+//! Converts character encoding using the supplied codecvt facet. If \a cvt is \c nullptr then \c path::codecvt() will be used.
 BOOST_FILESYSTEM_DECL
-void convert(const char* from, const char* from_end, std::wstring& to, const codecvt_type* cvt = NULL);
+void convert(const char* from, const char* from_end, std::wstring& to, const codecvt_type* cvt = nullptr);
 
 //! \overload convert
 BOOST_FILESYSTEM_DECL
-void convert(const wchar_t* from, const wchar_t* from_end, std::string& to, const codecvt_type* cvt = NULL);
+void convert(const wchar_t* from, const wchar_t* from_end, std::string& to, const codecvt_type* cvt = nullptr);
 
 
 //  Source dispatch  -----------------------------------------------------------------//
 
 template< typename Source, typename Callback >
-typename Callback::result_type dispatch(Source const& source, Callback cb, const codecvt_type* cvt = NULL);
+typename Callback::result_type dispatch(Source const& source, Callback cb, const codecvt_type* cvt = nullptr);
 
 template< typename Callback >
 BOOST_FORCEINLINE typename Callback::result_type dispatch(const char* source, Callback cb, const codecvt_type* cvt, ntcts_type_tag)
@@ -437,12 +437,12 @@ BOOST_FORCEINLINE typename Callback::result_type dispatch(Source const& source, 
     return cb(src.data(), src.data() + src.size(), cvt);
 }
 
-#if !defined(BOOST_FILESYSTEM_NO_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
+#if defined(BOOST_FILESYSTEM_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
 
 template< typename Callback >
 BOOST_FORCEINLINE typename Callback::result_type dispatch(std::vector< char > const& source, Callback cb, const codecvt_type* cvt, range_type_tag)
 {
-    const char* data = NULL, *data_end = NULL;
+    const char* data = nullptr, *data_end = nullptr;
     if (!source.empty())
     {
         data = &source[0];
@@ -454,7 +454,7 @@ BOOST_FORCEINLINE typename Callback::result_type dispatch(std::vector< char > co
 template< typename Callback >
 BOOST_FORCEINLINE typename Callback::result_type dispatch(std::vector< wchar_t > const& source, Callback cb, const codecvt_type* cvt, range_type_tag)
 {
-    const wchar_t* data = NULL, *data_end = NULL;
+    const wchar_t* data = nullptr, *data_end = nullptr;
     if (!source.empty())
     {
         data = &source[0];
@@ -463,7 +463,7 @@ BOOST_FORCEINLINE typename Callback::result_type dispatch(std::vector< wchar_t >
     return cb(data, data_end, cvt);
 }
 
-#endif // !defined(BOOST_FILESYSTEM_NO_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
+#endif // defined(BOOST_FILESYSTEM_DEPRECATED) && BOOST_FILESYSTEM_VERSION < 4
 
 // Defined in directory.hpp to avoid circular header dependencies
 template< typename Callback >
@@ -496,9 +496,7 @@ yes_type check_convertible(std::wstring_view const&);
 #endif
 yes_type check_convertible(boost::basic_string_view< char, std::char_traits< char > > const&);
 yes_type check_convertible(boost::basic_string_view< wchar_t, std::char_traits< wchar_t > > const&);
-#if !defined(BOOST_NO_CXX11_NULLPTR)
 no_type check_convertible(std::nullptr_t);
-#endif
 no_type check_convertible(...);
 
 } // namespace is_convertible_to_path_source_impl
@@ -525,9 +523,7 @@ namespace is_convertible_to_std_string_view_impl {
 
 yes_type check_convertible(std::string_view const&);
 yes_type check_convertible(std::wstring_view const&);
-#if !defined(BOOST_NO_CXX11_NULLPTR)
 no_type check_convertible(std::nullptr_t);
-#endif
 no_type check_convertible(...);
 
 } // namespace is_convertible_to_std_string_view_impl
@@ -551,9 +547,7 @@ yes_type check_convertible(boost::container::basic_string< char, std::char_trait
 yes_type check_convertible(boost::container::basic_string< wchar_t, std::char_traits< wchar_t >, void > const&);
 yes_type check_convertible(boost::basic_string_view< char, std::char_traits< char > > const&);
 yes_type check_convertible(boost::basic_string_view< wchar_t, std::char_traits< wchar_t > > const&);
-#if !defined(BOOST_NO_CXX11_NULLPTR)
 no_type check_convertible(std::nullptr_t);
-#endif
 no_type check_convertible(...);
 
 } // namespace is_convertible_to_path_source_non_std_string_view_impl
@@ -683,7 +677,7 @@ BOOST_FORCEINLINE typename Callback::result_type dispatch_convertible_impl(std::
 #endif // !defined(BOOST_NO_CXX17_HDR_STRING_VIEW)
 
 template< typename Source, typename Callback >
-BOOST_FORCEINLINE typename Callback::result_type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = NULL)
+BOOST_FORCEINLINE typename Callback::result_type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = nullptr)
 {
     typedef typename boost::remove_cv< Source >::type source_t;
     return path_traits::dispatch_convertible_impl< source_t >(source, cb, cvt);
@@ -709,7 +703,7 @@ template< typename Source, typename Callback >
 BOOST_FORCEINLINE typename boost::disable_if_c<
     is_convertible_to_std_string_view< typename boost::remove_cv< Source >::type >::value,
     typename Callback::result_type
->::type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = NULL)
+>::type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = nullptr)
 {
     typedef typename boost::remove_cv< Source >::type source_t;
     return path_traits::dispatch_convertible_impl< source_t >(source, cb, cvt);
@@ -719,7 +713,7 @@ template< typename Source, typename Callback >
 BOOST_FORCEINLINE typename boost::enable_if_c<
     is_convertible_to_std_string_view< typename boost::remove_cv< Source >::type >::value,
     typename Callback::result_type
->::type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = NULL)
+>::type dispatch_convertible(Source const& source, Callback cb, const codecvt_type* cvt = nullptr)
 {
     typedef typename boost::remove_cv< Source >::type source_t;
     return path_traits::dispatch_convertible_sv_impl< source_t >(source, cb, cvt);

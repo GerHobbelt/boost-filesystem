@@ -92,6 +92,12 @@ jobs:
             os: ubuntu-22.04
             install:
               - g++-12
+          - toolset: gcc-13
+            cxxstd: "11-gnu,14-gnu,17-gnu,20-gnu,23-gnu"
+            os: ubuntu-latest
+            container: ubuntu:23.04
+            install:
+              - g++-13
           - name: UBSAN
             toolset: gcc-11
             cxxstd: "11-gnu,14-gnu,17-gnu,20-gnu"
@@ -295,7 +301,7 @@ jobs:
             cmake_tests: 1
             os: ubuntu-20.04
 
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ${{matrix.os}}
     container: ${{matrix.container}}
 
@@ -556,7 +562,7 @@ jobs:
             cmake_tests: 1
             os: windows-2022
 
-    timeout-minutes: 120
+    timeout-minutes: 30
     runs-on: ${{matrix.os}}
 
     steps:

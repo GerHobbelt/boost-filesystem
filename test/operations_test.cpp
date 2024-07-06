@@ -603,6 +603,23 @@ void directory_iterator_tests()
         BOOST_TEST_EQ(vec[3].path().filename().string(), std::string("f1"));
     }
 
+    // Test that querying a file status for a removed file referenced by the iterator
+    // doesn't cause an error (i.e. the behavior is similar to standalone status/symlink_status).
+    // https://github.com/boostorg/filesystem/issues/314
+    {
+        BOOST_TEST(fs::is_empty(d2));
+        create_file(d2 / "file");
+        fs::directory_iterator it(d2);
+        fs::remove(d2 / "file");
+
+        for (; it != fs::directory_iterator(); ++it)
+        {
+            it->symlink_status();
+            it->status();
+            it->refresh();
+        }
+    }
+
     { // *i++ must meet the standard's InputIterator requirements
         fs::directory_iterator dir_itr(dir);
         BOOST_TEST(dir_itr != fs::directory_iterator());
@@ -1912,21 +1929,6 @@ void copy_file_tests(const fs::path& f1x, const fs::path& d1x)
     verify_file(d1x / "f2-non-existing", "file-f1");
     fs::remove(d1x / "f2-non-existing");
 
-    file_copied = false;
-    copy_ex_ok = true;
-    try
-    {
-        file_copied = fs::copy_file(f1x, d1x / "f2", fs::copy_options::update_existing);
-    }
-    catch (const fs::filesystem_error&)
-    {
-        copy_ex_ok = false;
-    }
-    BOOST_TEST(copy_ex_ok);
-    BOOST_TEST(!file_copied);
-    BOOST_TEST_EQ(fs::file_size(d1x / "f2"), 10U);
-    verify_file(d1x / "f2", "1234567890");
-
     // Sleep for a while so that the last modify time is more recent for new files
 #if defined(BOOST_POSIX_API)
     sleep(2);
@@ -1936,6 +1938,22 @@ void copy_file_tests(const fs::path& f1x, const fs::path& d1x)
 
     create_file(d1x / "f2-more-recent", "x");
     BOOST_TEST_EQ(fs::file_size(d1x / "f2-more-recent"), 1U);
+
+    file_copied = false;
+    copy_ex_ok = true;
+    try
+    {
+        file_copied = fs::copy_file(d1x / "f2", d1x / "f2-more-recent", fs::copy_options::update_existing);
+    }
+    catch (const fs::filesystem_error&)
+    {
+        copy_ex_ok = false;
+    }
+    BOOST_TEST(copy_ex_ok);
+    BOOST_TEST(!file_copied);
+    BOOST_TEST_EQ(fs::file_size(d1x / "f2-more-recent"), 1U);
+    verify_file(d1x / "f2-more-recent", "x");
+
     file_copied = false;
     copy_ex_ok = true;
     try
@@ -2313,7 +2331,7 @@ void symlink_file_size_tests()
 
 void symlink_is_empty_tests()
 {
-    cout << "symlink_file_size_tests..." << endl;
+    cout << "symlink_is_empty_tests..." << endl;
 
     // These symlinks are already created in symlink_status_tests() and symlink_file_size_tests(), which are run before this test
     fs::path dangling_sym(dir / "dangling-sym");
@@ -2803,6 +2821,12 @@ void weakly_canonical_basic_tests()
     BOOST_TEST_EQ(fs::weakly_canonical(dir / "no-such/foo/../bar"), dir / "no-such/bar");
     BOOST_TEST_EQ(fs::weakly_canonical(dir / "../no-such/foo/../bar"), dir.parent_path() / "no-such/bar");
     BOOST_TEST_EQ(fs::weakly_canonical(dir / "no-such/../f0"), dir / "f0"); // dir / "f0" exists, dir / "no-such" does not
+    BOOST_TEST_EQ(fs::weakly_canonical("f0", d1), d1 / "f0");
+    BOOST_TEST_EQ(fs::weakly_canonical("./f0", d1), d1 / "f0");
+    BOOST_TEST_EQ(fs::weakly_canonical("./foo", d1), d1 / "foo");
+    BOOST_TEST_EQ(fs::weakly_canonical("../f0", d1), dir / "f0");
+    BOOST_TEST_EQ(fs::weakly_canonical("../foo", d1), dir / "foo");
+    BOOST_TEST_EQ(fs::weakly_canonical("..//foo", d1), dir / "foo");
 
 #ifdef BOOST_WINDOWS_API
     BOOST_TEST_EQ(fs::weakly_canonical("c:/no-such/foo/bar"), fs::path("c:/no-such/foo/bar"));

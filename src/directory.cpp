@@ -270,7 +270,8 @@ inline system::error_code dir_itr_close(dir_itr_imp& imp) noexcept
 // Obtains a file descriptor from the directory iterator
 inline int dir_itr_fd(dir_itr_imp const& imp, system::error_code& ec)
 {
-    int fd = ::dirfd(static_cast< DIR* >(imp.handle));
+    // Note: dirfd is a macro on FreeBSD 9 and older
+    const int fd = dirfd(static_cast< DIR* >(imp.handle));
     if (BOOST_UNLIKELY(fd < 0))
     {
         int err = errno;
@@ -362,7 +363,7 @@ int readdir_select_impl(dir_itr_imp& imp, struct dirent** result);
 
 typedef int readdir_impl_t(dir_itr_imp& imp, struct dirent** result);
 
-//! Pointer to the actual implementation of the copy_file_data implementation
+//! Pointer to the actual implementation of readdir
 readdir_impl_t* readdir_impl_ptr = &readdir_select_impl;
 
 void init_readdir_impl()

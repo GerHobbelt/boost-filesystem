@@ -31,6 +31,11 @@ struct column_base
 {
     virtual string heading() const = 0;
     virtual string cell_value(const path& p) const = 0;
+
+	// fix warning C5204: '`anonymous-namespace'::column_base': class has virtual functions, but its trivial destructor is not virtual; instances of objects derived from this class may not be destructed correctly
+protected:
+	virtual ~column_base() = default;
+public:
 };
 
 struct c0 : public column_base
@@ -190,7 +195,7 @@ void do_table()
 #define BOOST_NO_CPP_MAIN_SUCCESS_MESSAGE
 #include <boost/test/included/prg_exec_monitor.hpp>
 
-int cpp_main(int argc, char* argv[]) // note name!
+int cpp_main(int argc, const char** argv) // note name!
 {
     if (argc != 5)
     {

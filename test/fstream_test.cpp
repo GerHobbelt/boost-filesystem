@@ -163,7 +163,7 @@ void test_movable()
 
 } // namespace
 
-int cpp_main(int argc, char*[])
+int cpp_main(int argc, const char**)
 {
     if (argc > 1)
         cleanup = false;

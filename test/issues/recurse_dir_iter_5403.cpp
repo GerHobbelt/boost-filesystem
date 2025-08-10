@@ -47,7 +47,7 @@ bool skip_long_windows_tests = false;
 //                                                                                    //
 //------------------------------------------------------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     // document state of critical macros
 #ifdef BOOST_POSIX_API

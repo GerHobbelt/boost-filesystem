@@ -340,7 +340,7 @@ void error_handling_test()
 //                                                                                      //
 //--------------------------------------------------------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
 // document state of critical macros
 #ifdef BOOST_POSIX_API

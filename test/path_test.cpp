@@ -2931,7 +2931,7 @@ const boost::filesystem::path ticket_6690("test");       // #6690 another V++ st
 #endif
 #endif
 
-int cpp_main(int, char*[])
+int cpp_main(int, const char**)
 {
     // The choice of platform is make at runtime rather than compile-time
     // so that compile errors for all platforms will be detected even though

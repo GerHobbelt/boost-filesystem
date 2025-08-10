@@ -67,7 +67,7 @@ nanosecond_type time_loop()
 //                                      main                                            //
 //--------------------------------------------------------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     if (argc != 2)
     {

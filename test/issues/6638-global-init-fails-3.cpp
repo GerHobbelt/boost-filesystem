@@ -30,7 +30,7 @@ public:
 Test test1;
 Test test2;
 
-int cpp_main(int, char*[])
+int cpp_main(int, const char**)
 {
     return 0;
 }

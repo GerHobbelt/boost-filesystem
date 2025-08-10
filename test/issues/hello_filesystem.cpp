@@ -29,7 +29,7 @@ namespace fs = boost::filesystem;
 
 //------------------------------------  cpp_main  --------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     cout << "Hello, filesystem world" << endl;
 

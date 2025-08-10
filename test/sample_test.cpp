@@ -36,7 +36,7 @@ bool cleanup = true;
 
 //  cpp_main  ----------------------------------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     if (argc > 1 && std::strcmp(argv[1], "--no-cleanup") == 0)
         cleanup = false;

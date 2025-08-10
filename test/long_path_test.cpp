@@ -23,7 +23,7 @@ using namespace boost::filesystem;
 namespace {
 } // unnamed namespace
 
-int cpp_main(int, char*[])
+int cpp_main(int, const char**)
 {
 
     std::string prefix("d:\\temp\\");

@@ -72,7 +72,7 @@ void test(fs::path const& p)
 
 } // namespace
 
-int cpp_main(int argc, char*[])
+int cpp_main(int argc, const char**)
 {
     if (argc > 1)
         cleanup = false;

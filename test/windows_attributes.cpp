@@ -24,7 +24,7 @@
 using std::make_pair;
 namespace fs = boost::filesystem;
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     typedef std::map< DWORD, std::string > decode_type;
     decode_type table;

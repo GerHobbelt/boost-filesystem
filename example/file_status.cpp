@@ -89,7 +89,7 @@ void try_exists()
 
 } // namespace
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
     print_boost_macros();
 

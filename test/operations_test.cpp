@@ -2898,7 +2898,7 @@ void weakly_canonical_symlink_tests()
 //                                                                                    //
 //------------------------------------------------------------------------------------//
 
-int cpp_main(int argc, char* argv[])
+int cpp_main(int argc, const char** argv)
 {
 // document state of critical macros
 #ifdef BOOST_POSIX_API

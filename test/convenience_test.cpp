@@ -57,7 +57,7 @@ void create_recursive_iterator(const fs::path& ph)
 
 //  ------------------------------------------------------------------------------------//
 
-int cpp_main(int, char*[])
+int cpp_main(int, const char**)
 {
 
     //  create_directories() tests  --------------------------------------------------------//

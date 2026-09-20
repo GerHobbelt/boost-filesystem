@@ -11,6 +11,13 @@
 [heading 1.93.0]
 
 * Reworked documentation, converted to QuickBook and Doxygen.
+* `directory_entry::symlink_status` and dependent APIs no longer indicate failure if updating status (i.e. dereferencing the symlink) fails. ([github_pr 353])
+* Added support for building the library with unresolved symbols on POSIX systems. This can be useful when compiling the library with sanitizers enabled, if
+  the sanitizer symbols are meant to be resolved at library load time. This build mode can be enabled by defining `BOOST_FILESYSTEM_ALLOW_UNDEFINED_SYMBOLS`
+  at Boost.Filesystem build time. ([github_issue 350])
+* Added support for setting UTF-8 codecvt facet as the default codecvt facet for path character code conversions. This can be useful if the system locale
+  is non-functional (e.g. with Musl C library), if the user knows that filesystem paths are always encoded as UTF-8 on the target platform. This can be
+  enabled by defining `BOOST_FILESYSTEM_USE_UTF8_CODECVT_FACET` at Boost.Filesystem build time. ([github_issue 351])
 
 [heading 1.92.0]
 
@@ -44,7 +51,8 @@
     symlinks.
   * Error codes reported by Boost.Filesystem will now use POSIX `errno` values.
 * On DragonFly BSD, NetBSD and Solaris, Boost.Filesystem default path locale now uses UTF-8 for path character encoding.
-* On Linux, use `read`/`write` loop implementation of `copy_file` and `copy` for configfs, securityfs, cgroup and cgroup2 filesystems, in addition to the previously blacklisted filesystems.
+* On Linux, use `read`/`write` loop implementation of `copy_file` and `copy` for configfs, securityfs, cgroup and cgroup2 filesystems, in addition to the previously
+  blacklisted filesystems.
 
 [heading 1.89.0]
 

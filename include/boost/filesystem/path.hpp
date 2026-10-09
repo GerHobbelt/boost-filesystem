@@ -30,7 +30,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/io/quoted.hpp>
-#include <boost/functional/hash_fwd.hpp>
+#include <boost/container_hash/hash_fwd.hpp>
 #include <boost/filesystem/detail/path_traits.hpp>
 #include <boost/filesystem/detail/type_traits/negation.hpp>
 #include <boost/filesystem/detail/type_traits/conjunction.hpp>
@@ -2418,6 +2418,21 @@ inline typename std::enable_if<
     return hash_range(p.native().begin(), p.native().end());
 #endif
 }
+
+} // namespace filesystem
+
+namespace container_hash {
+
+// Since the hash_value overload above is low priority, and since
+// `path` becomes a described class when reflection is available,
+// we need to explicitly specialize is_described_class to avoid
+// the ambiguity with hash_value for described classes
+
+template< > struct is_described_class< filesystem::path > : std::false_type {};
+
+} // namespace container_hash
+
+namespace filesystem {
 
 #else // !defined(BOOST_FILESYSTEM_DOXYGEN)
 
